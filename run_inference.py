@@ -39,10 +39,12 @@ def main():
         # Load native PyTorch model
         print(f"Loading native PyTorch model from {args.model_path}")
         model = vit_base_patch16_1024()
-        model = load_pretrained_model(model, args.model_path, device)
+        model = load_pretrained_model(model, args.model_path)
         model.eval()
+        model.to(device)
         
         with torch.no_grad():
+            
             outputs = model(img_tensor)
             print(f"Native model output shape: {outputs.shape}")
             print(f"CLS token features (first 5): {outputs[0, 0, :5]}")
@@ -50,9 +52,9 @@ def main():
     else:  # TorchScript model
         # Load TorchScript model
         print(f"Loading TorchScript model from {args.model_path}")
-        ts_model = load_torchscript_model(args.model_path, device)
+        ts_model = load_torchscript_model(args.model_path)
         ts_model.eval()
-        
+        ts_model.to(device)
         with torch.no_grad():
             outputs = ts_model(img_tensor)
             print(f"TorchScript model output shape: {outputs.shape}")
